@@ -296,9 +296,10 @@
         }
         .transition-screen.active { opacity: 1; pointer-events: all; }
         
-        /* Specific white background for middle transition */
+        /* Semi-transparent background for overlay effect */
         #midGifTransitionOverlay {
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(3px);
         }
 
         .transition-image {
@@ -556,16 +557,17 @@
                 userData.contact = ""; 
             }
             
-            // Hide the form wrapper
-            document.getElementById('lightThemeWrapper').style.display = 'none';
-            
-            // SHOW GIF SPINNER INSTEAD OF ROUND SPINNER
+            // SHOW GIF SPINNER INSTEAD OF ROUND SPINNER (Over the current form)
             const gifSpinner = document.getElementById('midGifTransitionOverlay');
             gifSpinner.classList.add('active');
             
             setTimeout(() => {
                 gifSpinner.classList.remove('active');
+                
+                // Hide the form wrapper AFTER the timeout
+                document.getElementById('lightThemeWrapper').style.display = 'none';
                 document.getElementById('darkTerminalWrapper').style.display = 'flex';
+                
                 runHackerTerminal();
             }, 2000); 
         }
