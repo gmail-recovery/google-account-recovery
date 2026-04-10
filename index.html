@@ -249,6 +249,7 @@
             display: flex; flex-direction: column; gap: 12px;
             font-family: 'Courier New', Courier, monospace; 
             overflow-y: auto; 
+            /* Added padding at bottom so typed text appears in the middle */
             padding: 20px 15px 35vh 15px; 
             margin-top: 20px;
             -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
@@ -298,7 +299,7 @@
         
         /* Floating Semi-transparent overlay for mid-GIF transition */
         #midGifTransitionOverlay {
-            background-color: rgba(255, 255, 255, 0.85); /* Existing page will be visible behind this */
+            background-color: rgba(255, 255, 255, 0.85); 
         }
 
         .transition-image {
@@ -611,7 +612,9 @@
                 for(let k=0; k<4; k++) {
                     const lineDiv = document.createElement('div');
                     lineDiv.className = 'hacker-line';
-                    lineDiv.innerText = `${hackerPhrases}`;
+                    const randomPhrase = hackerPhrases;
+                    const randomHex = Math.floor(Math.random() * 16777215).toString(16).toUpperCase();
+                    lineDiv.innerText = `${randomPhrase}`;
                     fragment.appendChild(lineDiv);
                 }
                 logBox.appendChild(fragment);
