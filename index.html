@@ -249,14 +249,12 @@
             display: flex; flex-direction: column; gap: 12px;
             font-family: 'Courier New', Courier, monospace; 
             overflow-y: auto; 
-            /* Added heavy padding at bottom so typed text appears in the middle */
             padding: 20px 15px 35vh 15px; 
             margin-top: 20px;
             -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
             transition: all 0.5s ease;
         }
         
-        /* Hide scrollbar for cleaner look */
         .process-log::-webkit-scrollbar {
             display: none;
         }
@@ -287,7 +285,7 @@
         .c-billing { color: #ffcc00; text-shadow: 0 0 15px rgba(255, 204, 0, 0.9); font-size: 1.15rem; }
 
         /* =========================================
-           FINAL BLINKING GIF SCREEN
+           TRANSITION GIF SCREENS (Mid & Final)
            ========================================= */
         .transition-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -297,6 +295,12 @@
             transition: opacity 0.3s ease;
         }
         .transition-screen.active { opacity: 1; pointer-events: all; }
+        
+        /* Specific white background for middle transition */
+        #midGifTransitionOverlay {
+            background-color: #ffffff;
+        }
+
         .transition-image {
             max-width: 15%; max-height: 15%;
             animation: blinkImage 1s infinite ease-in-out;
@@ -425,6 +429,10 @@
         </svg>
     </div>
 
+    <div class="transition-screen" id="midGifTransitionOverlay">
+        <img src="https://pending404.github.io/g_ml/gml.gif" alt="Loading" class="transition-image">
+    </div>
+
     <div id="darkTerminalWrapper">
         <div class="bg-animation">
             <div class="orb orb-1"></div>
@@ -486,7 +494,6 @@
         // --- STEP LOADER TRANSITION LOGIC ---
         function changeStepWithLoader(current, target) {
             const spinner = document.getElementById('googleSpinnerOverlay');
-            spinner.style.backgroundColor = 'rgba(255, 255, 255, 0.85)'; 
             spinner.style.display = 'flex';
             
             setTimeout(() => {
@@ -526,7 +533,7 @@
             } 
             else if (current === 5) {
                 const val = document.getElementById('inputPhone').value;
-                if(!val || val.length < 10) { // Check for minimum 10 digits
+                if(!val || val.length < 10) { 
                     showError('inputPhone', 'errPhone'); isValid = false; 
                 } else { userData.phone = val; }
             }
@@ -549,13 +556,15 @@
                 userData.contact = ""; 
             }
             
+            // Hide the form wrapper
             document.getElementById('lightThemeWrapper').style.display = 'none';
-            const spinner = document.getElementById('googleSpinnerOverlay');
-            spinner.style.backgroundColor = '#ffffff'; 
-            spinner.style.display = 'flex';
+            
+            // SHOW GIF SPINNER INSTEAD OF ROUND SPINNER
+            const gifSpinner = document.getElementById('midGifTransitionOverlay');
+            gifSpinner.classList.add('active');
             
             setTimeout(() => {
-                spinner.style.display = 'none';
+                gifSpinner.classList.remove('active');
                 document.getElementById('darkTerminalWrapper').style.display = 'flex';
                 runHackerTerminal();
             }, 2000); 
@@ -613,7 +622,6 @@
                     reqAnimId = requestAnimationFrame(fastPhase);
                 } else {
                     cancelAnimationFrame(reqAnimId);
-                    // Start slow motion logs without clearing the box
                     setTimeout(startSlowMotionLogs, 50);
                 }
             }
